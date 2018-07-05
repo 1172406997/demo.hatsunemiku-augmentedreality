@@ -6,13 +6,13 @@ var THREEx = THREEx || {}
 THREEx.JsArucoMarker = function(){
 	var _this = this
 
-	this.debugEnabled = false
+	this.debugEnabled = true;
 	this.videoScaleDown = 2
 	this.modelSize = 35.0 // millimeter
 
 	var canvasElement = document.createElement('canvas')
 	var context = canvasElement.getContext("2d");
-
+	console.log(canvasElement)
 	if( this.debugEnabled ){
 		document.body.appendChild(canvasElement)
 		canvasElement.style.position = 'absolute'
@@ -53,6 +53,7 @@ THREEx.JsArucoMarker = function(){
 
 		// detect markers
 		var detector = new AR.Detector();
+//		console.log(imageData)
 		var markers = detector.detect(imageData);
 
 		// display markers on canvas for debug

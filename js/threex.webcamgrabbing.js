@@ -76,32 +76,47 @@ THREEx.WebcamGrabbing = function(){
         }, 500)
 
         // get the media sources
-        MediaStreamTrack.getSources(function(sourceInfos) {
+        
+        navigator.mediaDevices.enumerateDevices().then(function(sourceInfos) {
+//      MediaStreamTrack.getSources(function(sourceInfos) {
                 // define getUserMedia() constraints
+//              alert(1)
+				var videoidx = 0
                 var constraints = {
                         video: true,
                         audio: false,
                 }
                 // to mirror the video element when it isnt 'environment'
                 // domElement.style.transform   = 'scaleX(-1)'
-
+                console.log("sourceInfos",sourceInfos)
+				
                 // it it finds the videoSource 'environment', modify constraints.video
                 for (var i = 0; i != sourceInfos.length; ++i) {
                         var sourceInfo = sourceInfos[i];
-                        if(sourceInfo.kind == "video" && sourceInfo.facing == "environment") {
+//                      alert(sourceInfo.kind)
+                        if(sourceInfo.kind == "videoinput" && sourceInfo.facing == "environment") {
+//                      	alert("里层",sourceInfo.kind)
                                 constraints.video = {
                                         optional: [{sourceId: sourceInfo.id}]
                                 }
                                 // not to mirror the video element when it is 'environment'
                                 // domElement.style.transform   = ''
+                        }else if(sourceInfo.kind == "videoinput" && sourceInfo.facing != "environment"){
+                        	++videoidx
                         }
+                }
+                if(videoidx>1){
+                	constraints.video = { facingMode: { exact: "environment" } }
                 }
 
                 // try to get user media
-                navigator.getUserMedia( constraints, function(stream){
-                        domElement.src = URL.createObjectURL(stream);
-                }, function(error) {
+                 
+                navigator.mediaDevices.getUserMedia( constraints).then(function(stream){
+                	var video=document.querySelector("video")
+					video.src=URL.createObjectURL(stream);
+                }).catch(function(error) {
                         console.error("Cant getUserMedia()! due to ", error);
+                        alert("error",error)
                 });
         });
 
